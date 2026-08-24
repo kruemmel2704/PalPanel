@@ -1,0 +1,12 @@
+**/node_modules
+**/bin
+**/obj
+**/.git
+**/.vs
+**/.vscode
+**/.idea
+**/wwwroot/assets
+**/backups
+Dockerfile
+docker-compose.yml
+.dockerignore

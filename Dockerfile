@@ -1,12 +1,14 @@
 # ----------------------------------------------------
 # Stage 1: Build React Frontend
 # ----------------------------------------------------
-FROM node:20-alpine AS build-frontend
+FROM node:20-bookworm-slim AS build-frontend
 WORKDIR /client
 
+# Copy package files first for layer caching
 COPY src/PalPanel.Client/package*.json ./
-RUN npm ci --prefer-offline --no-audit
+RUN npm install
 
+# Copy frontend source code (node_modules is excluded by .dockerignore)
 COPY src/PalPanel.Client/ ./
 RUN npm run build
 
@@ -36,7 +38,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build-backend /app/publish .
-COPY --from=build-frontend /PalPanel.Server/wwwroot ./wwwroot
+COPY --from=build-frontend /client/dist ./wwwroot
 
 # Ensure backups directory exists
 RUN mkdir -p /app/backups
