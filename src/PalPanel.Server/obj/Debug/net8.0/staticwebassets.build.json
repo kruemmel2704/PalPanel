@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "/UldV8XD6GpOeo2dgeiaoEa9kUElXYMNv0NKWgaveyg=",
+  "Hash": "jZoW/qAuR8IKYXCKUunvVCcauQfaab93o+y2iDNBxE0=",
   "Source": "PalPanel.Server",
   "BasePath": "_content/PalPanel.Server",
   "Mode": "Default",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-BVLMfe78.js",
+      "SourceId": "PalPanel.Server",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\",
+      "BasePath": "_content/PalPanel.Server",
+      "RelativePath": "assets/index-BVLMfe78.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-BVLMfe78.js"
+    },
     {
       "Identity": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-BzyFUE0t.js",
       "SourceId": "PalPanel.Server",
@@ -34,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\assets\\index-BzyFUE0t.js"
+    },
+    {
+      "Identity": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-CfuWP0_F.js",
+      "SourceId": "PalPanel.Server",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\",
+      "BasePath": "_content/PalPanel.Server",
+      "RelativePath": "assets/index-CfuWP0_F.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\assets\\index-CfuWP0_F.js"
     },
     {
       "Identity": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-D-mbb2sF.css",

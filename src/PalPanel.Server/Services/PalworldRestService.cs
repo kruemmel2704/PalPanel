@@ -18,13 +18,23 @@ public class PalworldRestService : IPalworldRestService
         _config = config;
     }
 
-    private void SetupAuth()
+    private HttpRequestMessage CreateRequest(HttpMethod method, string path, string? jsonBody = null)
     {
-        if (!string.IsNullOrEmpty(_config.RestApiPassword))
+        var url = $"{_config.RestApiUrl.TrimEnd('/')}/{path.TrimStart('/')}";
+        var request = new HttpRequestMessage(method, url);
+
+        // Basic Auth: admin:<AdminPassword>
+        var username = string.IsNullOrEmpty(_config.RestApiUser) ? "admin" : _config.RestApiUser;
+        var password = _config.RestApiPassword ?? "";
+        var authString = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", authString);
+
+        if (!string.IsNullOrEmpty(jsonBody))
         {
-            var authBytes = Encoding.UTF8.GetBytes($"{_config.RestApiUser}:{_config.RestApiPassword}");
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authBytes));
+            request.Content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
         }
+
+        return request;
     }
 
     public async Task<List<PlayerInfo>?> GetPlayersAsync()
@@ -33,10 +43,14 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/players";
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return null;
+            using var request = CreateRequest(HttpMethod.Get, "/v1/api/players");
+            using var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogDebug("Palworld REST API /v1/api/players returned status: {Status}", response.StatusCode);
+                return null;
+            }
 
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
@@ -83,10 +97,14 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/info";
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode) return null;
+            using var request = CreateRequest(HttpMethod.Get, "/v1/api/info");
+            using var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogDebug("Palworld REST API /v1/api/info returned status: {Status}", response.StatusCode);
+                return null;
+            }
 
             var json = await response.Content.ReadAsStringAsync();
             using var doc = JsonDocument.Parse(json);
@@ -94,12 +112,31 @@ public class PalworldRestService : IPalworldRestService
             var serverName = doc.RootElement.TryGetProperty("servername", out var sn) ? sn.GetString() ?? "" : "";
             var version = doc.RootElement.TryGetProperty("version", out var v) ? v.GetString() ?? "" : "";
 
+            // Also try to query metrics for FPS & uptime
+            long uptimeSeconds = 0;
+            try
+            {
+                using var metricsReq = CreateRequest(HttpMethod.Get, "/v1/api/metrics");
+                using var metricsResp = await _httpClient.SendAsync(metricsReq);
+                if (metricsResp.IsSuccessStatusCode)
+                {
+                    var mJson = await metricsResp.Content.ReadAsStringAsync();
+                    using var mDoc = JsonDocument.Parse(mJson);
+                    if (mDoc.RootElement.TryGetProperty("uptime", out var upVal))
+                    {
+                        uptimeSeconds = upVal.GetInt64();
+                    }
+                }
+            }
+            catch { }
+
             return new ServerStatus
             {
                 IsOnline = true,
                 State = "Online",
                 ServerName = serverName,
-                ServerVersion = version
+                ServerVersion = version,
+                UptimeSeconds = uptimeSeconds
             };
         }
         catch (Exception ex)
@@ -115,9 +152,8 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/save";
-            var response = await _httpClient.PostAsync(url, new StringContent("{}", Encoding.UTF8, "application/json"));
+            using var request = CreateRequest(HttpMethod.Post, "/v1/api/save", "{}");
+            using var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -133,10 +169,9 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/announce";
-            var content = new StringContent(JsonSerializer.Serialize(new { message }), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(url, content);
+            var body = JsonSerializer.Serialize(new { message });
+            using var request = CreateRequest(HttpMethod.Post, "/v1/api/announce", body);
+            using var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -152,10 +187,9 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/kick";
-            var content = new StringContent(JsonSerializer.Serialize(new { userid = userId, message = message ?? "Kicked by admin" }), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(url, content);
+            var body = JsonSerializer.Serialize(new { userid = userId, message = message ?? "Kicked by admin" });
+            using var request = CreateRequest(HttpMethod.Post, "/v1/api/kick", body);
+            using var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -171,10 +205,9 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/ban";
-            var content = new StringContent(JsonSerializer.Serialize(new { userid = userId, message = message ?? "Banned by admin" }), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(url, content);
+            var body = JsonSerializer.Serialize(new { userid = userId, message = message ?? "Banned by admin" });
+            using var request = CreateRequest(HttpMethod.Post, "/v1/api/ban", body);
+            using var response = await _httpClient.SendAsync(request);
             return response.IsSuccessStatusCode;
         }
         catch (Exception ex)
@@ -190,11 +223,17 @@ public class PalworldRestService : IPalworldRestService
 
         try
         {
-            SetupAuth();
-            var url = $"{_config.RestApiUrl.TrimEnd('/')}/v1/api/stop";
-            var content = new StringContent(JsonSerializer.Serialize(new { waittime = waitTimeSeconds, message }), Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(url, content);
-            return response.IsSuccessStatusCode;
+            // Try /v1/api/shutdown first, then fallback to /v1/api/stop
+            var body = JsonSerializer.Serialize(new { waittime = waitTimeSeconds, message });
+            using var request = CreateRequest(HttpMethod.Post, "/v1/api/shutdown", body);
+            using var response = await _httpClient.SendAsync(request);
+            
+            if (response.IsSuccessStatusCode) return true;
+
+            // Fallback to /v1/api/stop
+            using var stopReq = CreateRequest(HttpMethod.Post, "/v1/api/stop", body);
+            using var stopResp = await _httpClient.SendAsync(stopReq);
+            return stopResp.IsSuccessStatusCode;
         }
         catch (Exception ex)
         {

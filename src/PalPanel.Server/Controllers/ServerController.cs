@@ -61,4 +61,11 @@ public class ServerController : ControllerBase
         var logs = await _serverService.GetRecentLogsAsync(lines);
         return Ok(logs);
     }
+
+    [HttpGet("diagnostics")]
+    public async Task<ActionResult<ConnectionDiagnostics>> GetDiagnostics()
+    {
+        var diag = await _serverService.RunDiagnosticsAsync();
+        return Ok(diag);
+    }
 }

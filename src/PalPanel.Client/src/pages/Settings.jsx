@@ -10,8 +10,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   Key,
+  Activity,
+  Check,
+  XCircle,
 } from 'lucide-react';
-import { configApi } from '../services/api';
+import { configApi, serverApi } from '../services/api';
 
 export default function Settings({ initialConfig, onConfigUpdated }) {
   const [formData, setFormData] = useState({
@@ -44,6 +47,8 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
+  const [diagnostics, setDiagnostics] = useState(null);
+  const [isRunningDiag, setIsRunningDiag] = useState(false);
 
   useEffect(() => {
     if (initialConfig) {
@@ -57,6 +62,25 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
       ...prev,
       [name]: type === 'checkbox' ? checked : type === 'number' ? Number(value) : value,
     }));
+  };
+
+  const handleRunDiagnostics = async () => {
+    try {
+      setIsRunningDiag(true);
+      const res = await serverApi.getDiagnostics();
+      setDiagnostics(res);
+    } catch (err) {
+      setDiagnostics({
+        processRunning: false,
+        processDetails: `Fehler beim Abrufen: ${err.message}`,
+        restApiReachable: false,
+        restApiDetails: err.message,
+        rconReachable: false,
+        rconDetails: err.message,
+      });
+    } finally {
+      setIsRunningDiag(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -117,6 +141,19 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
           </div>
         </div>
 
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button
+            type="button"
+            onClick={handleRunDiagnostics}
+            disabled={isRunningDiag}
+            className="btn btn-secondary"
+            style={{ gap: '8px' }}
+          >
+            <Activity size={16} color="#06b6d4" className={isRunningDiag ? 'animate-spin' : ''} />
+            {isRunningDiag ? 'Teste Verbindung...' : 'Verbindung testen (Diagnose)'}
+          </button>
+        </div>
+
         {saveStatus && (
           <div
             style={{
@@ -136,6 +173,69 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
           </div>
         )}
       </div>
+
+      {/* Diagnostics Results Box */}
+      {diagnostics && (
+        <div
+          className="glass-panel animate-fade-in"
+          style={{
+            padding: '20px 24px',
+            marginBottom: '24px',
+            border: '1px solid rgba(6, 182, 212, 0.3)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '14px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Activity size={18} color="#06b6d4" />
+              <strong style={{ fontSize: '1rem', color: '#ffffff' }}>Diagnose-Ergebnisse</strong>
+            </div>
+            <button
+              onClick={() => setDiagnostics(null)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            >
+              ✕
+            </button>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px' }}>
+            {/* Process */}
+            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                {diagnostics.processRunning ? <Check size={16} color="#34d399" /> : <XCircle size={16} color="#fb7185" />}
+                <span style={{ fontWeight: 600, color: diagnostics.processRunning ? '#34d399' : '#fb7185' }}>
+                  Linux PalServer Prozess
+                </span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{diagnostics.processDetails}</p>
+            </div>
+
+            {/* REST API */}
+            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                {diagnostics.restApiReachable ? <Check size={16} color="#34d399" /> : <XCircle size={16} color="#fb7185" />}
+                <span style={{ fontWeight: 600, color: diagnostics.restApiReachable ? '#34d399' : '#fb7185' }}>
+                  Native REST API (Port 8212)
+                </span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{diagnostics.restApiDetails}</p>
+            </div>
+
+            {/* RCON */}
+            <div style={{ padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                {diagnostics.rconReachable ? <Check size={16} color="#34d399" /> : <XCircle size={16} color="#fb7185" />}
+                <span style={{ fontWeight: 600, color: diagnostics.rconReachable ? '#34d399' : '#fb7185' }}>
+                  Source RCON (Port 25575)
+                </span>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{diagnostics.rconDetails}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {/* Section 1: Linux Server & Process Management */}

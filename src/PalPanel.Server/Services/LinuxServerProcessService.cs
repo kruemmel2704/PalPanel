@@ -617,5 +617,81 @@ public class LinuxServerProcessService : IPalworldServerService
         return $"{ts.Minutes}m {ts.Seconds}s";
     }
 
+    public async Task<ConnectionDiagnostics> RunDiagnosticsAsync()
+    {
+        var diag = new ConnectionDiagnostics();
+
+        // 1. Check process
+        int pid = await GetPalServerProcessIdAsync();
+        if (pid > 0)
+        {
+            diag.ProcessRunning = true;
+            diag.ProcessDetails = $"Palworld Server läuft als PID {pid}.";
+        }
+        else
+        {
+            diag.ProcessRunning = false;
+            diag.ProcessDetails = "Kein laufender 'PalServer-Linux-Test' Prozess auf Linux gefunden.";
+        }
+
+        // 2. Check REST API
+        if (_config.EnableRestApi)
+        {
+            try
+            {
+                var restInfo = await _restService.GetServerInfoAsync();
+                if (restInfo != null && restInfo.IsOnline)
+                {
+                    diag.RestApiReachable = true;
+                    diag.RestApiDetails = $"Erfolgreich verbunden mit REST API ({_config.RestApiUrl}). Server-Version: {restInfo.ServerVersion}";
+                }
+                else
+                {
+                    diag.RestApiReachable = false;
+                    diag.RestApiDetails = $"REST API ({_config.RestApiUrl}) antwortet nicht oder Authentifizierung fehlgeschlagen (Überprüfe AdminPassword in PalWorldSettings.ini und RESTAPIEnabled=True).";
+                }
+            }
+            catch (Exception ex)
+            {
+                diag.RestApiReachable = false;
+                diag.RestApiDetails = $"REST API Fehler: {ex.Message}";
+            }
+        }
+        else
+        {
+            diag.RestApiDetails = "REST API ist in den Einstellungen deaktiviert.";
+        }
+
+        // 3. Check RCON
+        if (_config.EnableRcon)
+        {
+            try
+            {
+                var rconRes = await _rconService.ExecuteCommandAsync("Info");
+                if (rconRes.Success)
+                {
+                    diag.RconReachable = true;
+                    diag.RconDetails = $"Erfolgreich über RCON verbunden ({_config.RconHost}:{_config.RconPort}). Antwort: {rconRes.Output}";
+                }
+                else
+                {
+                    diag.RconReachable = false;
+                    diag.RconDetails = $"RCON Verbindung fehlgeschlagen: {rconRes.Message}";
+                }
+            }
+            catch (Exception ex)
+            {
+                diag.RconReachable = false;
+                diag.RconDetails = $"RCON Fehler: {ex.Message}";
+            }
+        }
+        else
+        {
+            diag.RconDetails = "RCON ist in den Einstellungen deaktiviert.";
+        }
+
+        return diag;
+    }
+
     #endregion
 }

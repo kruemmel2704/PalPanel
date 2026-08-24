@@ -43,6 +43,7 @@ export const serverApi = {
   stopServer: () => request('/server/stop', { method: 'POST' }),
   restartServer: () => request('/server/restart', { method: 'POST' }),
   getLogs: (lines = 50) => request(`/server/logs?lines=${lines}`),
+  getDiagnostics: () => request('/server/diagnostics'),
 };
 
 export const playersApi = {

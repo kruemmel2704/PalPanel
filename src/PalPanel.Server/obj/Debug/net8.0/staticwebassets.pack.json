@@ -1,8 +1,16 @@
 {
   "Files": [
     {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-BVLMfe78.js",
+      "PackagePath": "staticwebassets\\assets\\index-BVLMfe78.js"
+    },
+    {
       "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-BzyFUE0t.js",
       "PackagePath": "staticwebassets\\assets\\index-BzyFUE0t.js"
+    },
+    {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-CfuWP0_F.js",
+      "PackagePath": "staticwebassets\\assets\\index-CfuWP0_F.js"
     },
     {
       "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-D-mbb2sF.css",
