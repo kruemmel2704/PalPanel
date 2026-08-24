@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  palpanel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: palpanel
+    restart: unless-stopped
+    # host network mode allows direct access to Palworld RCON (25575) & REST API (8212) on localhost
+    network_mode: "host"
+    volumes:
+      - /home/steam:/home/steam:ro
+      - /home/steam/steamcmd/palworld/Pal/Saved/SaveGames:/home/steam/steamcmd/palworld/Pal/Saved/SaveGames
+      - ./backups:/app/backups
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - PalPanelConfig__ServerName=Palworld Dedicated Server
+      - PalPanelConfig__ExecutionMode=Systemd
+      - PalPanelConfig__SteamUser=steam
+      - PalPanelConfig__SystemdServiceName=palworld.service
+      - PalPanelConfig__RconHost=127.0.0.1
+      - PalPanelConfig__RconPort=25575
+      - PalPanelConfig__RconPassword=adminpassword
+      - PalPanelConfig__EnableRestApi=true
+      - PalPanelConfig__RestApiUrl=http://127.0.0.1:8212
+      - PalPanelConfig__RestApiPassword=adminpassword
+      - PalPanelConfig__SaveDirectoryPath=/home/steam/steamcmd/palworld/Pal/Saved/SaveGames
+      - PalPanelConfig__BackupDirectoryPath=/app/backups

@@ -1,0 +1,16 @@
+[Unit]
+Description=Palworld Dedicated Server
+After=network.target
+
+[Service]
+Type=simple
+User=steam
+Group=steam
+WorkingDirectory=/home/steam/steamcmd/palworld
+ExecStart=/home/steam/steamcmd/palworld/PalServer.sh -port=8211 -players=32 -useperfthreads -NoAsyncLoadingThread -UseMultithreadForDS
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=100000
+
+[Install]
+WantedBy=multi-user.target

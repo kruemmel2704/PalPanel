@@ -1,0 +1,16 @@
+[Unit]
+Description=PalPanel - Palworld Server Management Web Interface
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/palpanel
+ExecStart=/usr/bin/dotnet /opt/palpanel/PalPanel.Server.dll
+Restart=always
+RestartSec=5
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ASPNETCORE_URLS=http://0.0.0.0:5000
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+@PalPanel.Server_HostAddress = http://localhost:5229
+
+GET {{PalPanel.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
