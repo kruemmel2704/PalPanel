@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace PalPanel.Server.Models;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ServerExecutionMode
 {
     Systemd,

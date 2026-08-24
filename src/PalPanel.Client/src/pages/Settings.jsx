@@ -9,6 +9,7 @@ import {
   Cpu,
   CheckCircle2,
   AlertTriangle,
+  Key,
 } from 'lucide-react';
 import { configApi } from '../services/api';
 
@@ -23,6 +24,11 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
     serverWorkingDirectory: '/home/steam/steamcmd/palworld',
     saveDirectoryPath: '/home/steam/steamcmd/palworld/Pal/Saved/SaveGames',
     backupDirectoryPath: './backups',
+    sshHost: '127.0.0.1',
+    sshPort: 22,
+    sshUsername: 'steam',
+    sshPassword: '',
+    dockerContainerName: 'palworld-server',
     enableRcon: true,
     rconHost: '127.0.0.1',
     rconPort: 25575,
@@ -64,7 +70,7 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
       if (onConfigUpdated) onConfigUpdated(updated);
       setTimeout(() => setSaveStatus(null), 4000);
     } catch (err) {
-      setSaveStatus({ text: `Fehler: ${err.message}`, type: 'error' });
+      setSaveStatus({ text: `Fehler beim Speichern: ${err.message}`, type: 'error' });
     } finally {
       setIsSaving(false);
     }
@@ -106,7 +112,7 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
               Server- & Linux-Konfiguration
             </h2>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-              Passe Linux-Pfade, Benutzerrechte (`steam`), RCON- und REST-Zugänge an
+              Passe Linux-Pfade, Betriebsmodus, SSH-Zugänge, RCON- und REST-Zugänge an
             </p>
           </div>
         </div>
@@ -166,9 +172,9 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
                 onChange={handleChange}
               >
                 <option value="Systemd">Systemd (Empfohlen für Linux Host)</option>
+                <option value="SSH">Remote SSH (Empfohlen bei Docker-Betrieb)</option>
                 <option value="DirectProcess">Direct Process (su - steam -c PalServer.sh)</option>
                 <option value="Docker">Docker Container</option>
-                <option value="SSH">Remote SSH</option>
                 <option value="Simulated">Simuliert (Dev Test)</option>
               </select>
             </div>
@@ -198,6 +204,102 @@ export default function Settings({ initialConfig, onConfigUpdated }) {
                 onChange={handleChange}
               />
             </div>
+
+            {/* Conditional SSH Settings */}
+            {formData.executionMode === 'SSH' && (
+              <div
+                style={{
+                  gridColumn: '1 / -1',
+                  padding: '16px',
+                  backgroundColor: 'rgba(6, 182, 212, 0.08)',
+                  borderRadius: 'var(--radius-md)',
+                  border: '1px solid rgba(6, 182, 212, 0.25)',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                  gap: '14px',
+                }}
+              >
+                <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Key size={16} color="#22d3ee" />
+                  <strong style={{ fontSize: '0.9rem', color: '#22d3ee' }}>
+                    SSH-Zugangsdaten für Linux Host
+                  </strong>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    SSH Host
+                  </label>
+                  <input
+                    type="text"
+                    name="sshHost"
+                    className="input-control"
+                    placeholder="127.0.0.1"
+                    value={formData.sshHost}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    SSH Port
+                  </label>
+                  <input
+                    type="number"
+                    name="sshPort"
+                    className="input-control"
+                    placeholder="22"
+                    value={formData.sshPort}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    SSH Benutzer (z.B. steam oder root)
+                  </label>
+                  <input
+                    type="text"
+                    name="sshUsername"
+                    className="input-control"
+                    placeholder="steam"
+                    value={formData.sshUsername}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>
+                    SSH Passwort / Sudo-Passwort
+                  </label>
+                  <input
+                    type="password"
+                    name="sshPassword"
+                    className="input-control"
+                    placeholder="••••••••"
+                    value={formData.sshPassword}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Conditional Docker Settings */}
+            {formData.executionMode === 'Docker' && (
+              <div style={{ gridColumn: '1 / -1' }}>
+                <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                  Docker Container Name des Palworld Servers
+                </label>
+                <input
+                  type="text"
+                  name="dockerContainerName"
+                  className="input-control"
+                  placeholder="palworld-server"
+                  value={formData.dockerContainerName}
+                  onChange={handleChange}
+                />
+              </div>
+            )}
 
             <div style={{ gridColumn: '1 / -1' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>

@@ -1,0 +1,15 @@
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\PalPanel.Server.exe
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\appsettings.Development.json
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\appsettings.json
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\PalPanel.Server.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\PalPanel.Server.deps.json
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\PalPanel.Server.runtimeconfig.json
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\PalPanel.Server.pdb
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\BouncyCastle.Cryptography.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Microsoft.OpenApi.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Renci.SshNet.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\User\Desktop\Projekte\PalPanel\bin\publish-test\Swashbuckle.AspNetCore.SwaggerUI.dll

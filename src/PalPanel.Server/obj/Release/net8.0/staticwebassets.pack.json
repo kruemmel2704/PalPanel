@@ -1,0 +1,37 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-BzyFUE0t.js",
+      "PackagePath": "staticwebassets\\assets\\index-BzyFUE0t.js"
+    },
+    {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-CfuWP0_F.js",
+      "PackagePath": "staticwebassets\\assets\\index-CfuWP0_F.js"
+    },
+    {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\assets\\index-D-mbb2sF.css",
+      "PackagePath": "staticwebassets\\assets\\index-D-mbb2sF.css"
+    },
+    {
+      "Id": "C:\\Users\\User\\Desktop\\Projekte\\PalPanel\\src\\PalPanel.Server\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.PalPanel.Server.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.PalPanel.Server.props",
+      "PackagePath": "build\\PalPanel.Server.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.PalPanel.Server.props",
+      "PackagePath": "buildMultiTargeting\\PalPanel.Server.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.PalPanel.Server.props",
+      "PackagePath": "buildTransitive\\PalPanel.Server.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
