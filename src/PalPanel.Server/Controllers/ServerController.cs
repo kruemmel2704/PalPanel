@@ -32,27 +32,27 @@ public class ServerController : ControllerBase
     }
 
     [HttpPost("start")]
-    public async Task<ActionResult> StartServer()
+    public async Task<ActionResult<ServerActionResult>> StartServer()
     {
         _logger.LogInformation("API requested server start");
-        var success = await _serverService.StartServerAsync();
-        return Ok(new { success, message = success ? "Start signal sent to Palworld server." : "Failed to start server." });
+        var result = await _serverService.StartServerAsync();
+        return Ok(result);
     }
 
     [HttpPost("stop")]
-    public async Task<ActionResult> StopServer()
+    public async Task<ActionResult<ServerActionResult>> StopServer()
     {
         _logger.LogInformation("API requested server stop");
-        var success = await _serverService.StopServerAsync();
-        return Ok(new { success, message = success ? "Stop signal sent to Palworld server." : "Failed to stop server." });
+        var result = await _serverService.StopServerAsync();
+        return Ok(result);
     }
 
     [HttpPost("restart")]
-    public async Task<ActionResult> RestartServer()
+    public async Task<ActionResult<ServerActionResult>> RestartServer()
     {
         _logger.LogInformation("API requested server restart");
-        var success = await _serverService.RestartServerAsync();
-        return Ok(new { success, message = success ? "Restart signal sent to Palworld server." : "Failed to restart server." });
+        var result = await _serverService.RestartServerAsync();
+        return Ok(result);
     }
 
     [HttpGet("logs")]

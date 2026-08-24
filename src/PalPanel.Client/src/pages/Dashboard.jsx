@@ -28,16 +28,21 @@ export default function Dashboard({
   const [isProcessing, setIsProcessing] = useState(false);
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastStatus, setBroadcastStatus] = useState(null);
-  const [actionFeedback, setActionFeedback] = useState(null);
+  const [actionFeedback, setActionFeedback] = useState(null); // { text, details, type }
 
   const handleStart = async () => {
     try {
       setIsProcessing(true);
-      setActionFeedback('Starte Server...');
-      await serverApi.startServer();
+      setActionFeedback({ text: 'Starte Palworld Server...', type: 'info' });
+      const res = await serverApi.startServer();
+      if (res.success) {
+        setActionFeedback({ text: res.message || 'Server gestartet!', details: res.details, type: 'success' });
+      } else {
+        setActionFeedback({ text: res.message || 'Konnte Server nicht starten.', details: res.details, type: 'error' });
+      }
       setTimeout(onRefresh, 1500);
     } catch (err) {
-      setActionFeedback(`Fehler beim Starten: ${err.message}`);
+      setActionFeedback({ text: `Fehler beim Starten: ${err.message}`, type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -47,11 +52,16 @@ export default function Dashboard({
     if (!window.confirm('Bist du sicher, dass du den Palworld-Server stoppen möchtest?')) return;
     try {
       setIsProcessing(true);
-      setActionFeedback('Stoppe Server...');
-      await serverApi.stopServer();
+      setActionFeedback({ text: 'Stoppe Palworld Server...', type: 'info' });
+      const res = await serverApi.stopServer();
+      if (res.success) {
+        setActionFeedback({ text: res.message || 'Server gestoppt.', details: res.details, type: 'success' });
+      } else {
+        setActionFeedback({ text: res.message || 'Fehler beim Stoppen.', details: res.details, type: 'error' });
+      }
       setTimeout(onRefresh, 1500);
     } catch (err) {
-      setActionFeedback(`Fehler beim Stoppen: ${err.message}`);
+      setActionFeedback({ text: `Fehler beim Stoppen: ${err.message}`, type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -61,11 +71,16 @@ export default function Dashboard({
     if (!window.confirm('Server wirklich neustarten? Spieler werden kurz getrennt.')) return;
     try {
       setIsProcessing(true);
-      setActionFeedback('Starte Server neu...');
-      await serverApi.restartServer();
+      setActionFeedback({ text: 'Starte Palworld Server neu...', type: 'info' });
+      const res = await serverApi.restartServer();
+      if (res.success) {
+        setActionFeedback({ text: res.message || 'Server neu gestartet.', details: res.details, type: 'success' });
+      } else {
+        setActionFeedback({ text: res.message || 'Fehler beim Neustart.', details: res.details, type: 'error' });
+      }
       setTimeout(onRefresh, 2000);
     } catch (err) {
-      setActionFeedback(`Fehler beim Neustart: ${err.message}`);
+      setActionFeedback({ text: `Fehler beim Neustart: ${err.message}`, type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -74,12 +89,12 @@ export default function Dashboard({
   const handleSaveWorld = async () => {
     try {
       setIsProcessing(true);
-      setActionFeedback('Speichere Palworld-Welt...');
+      setActionFeedback({ text: 'Speichere Palworld-Welt...', type: 'info' });
       await rconApi.saveWorld();
-      setActionFeedback('Welt erfolgreich gespeichert!');
-      setTimeout(() => setActionFeedback(null), 4000);
+      setActionFeedback({ text: 'Welt erfolgreich gespeichert!', type: 'success' });
+      setTimeout(() => setActionFeedback(null), 5000);
     } catch (err) {
-      setActionFeedback(`Fehler beim Speichern: ${err.message}`);
+      setActionFeedback({ text: `Fehler beim Speichern: ${err.message}`, type: 'error' });
     } finally {
       setIsProcessing(false);
     }
@@ -115,23 +130,53 @@ export default function Dashboard({
         <div
           style={{
             marginBottom: '20px',
-            padding: '12px 18px',
-            background: 'rgba(6, 182, 212, 0.15)',
-            border: '1px solid rgba(6, 182, 212, 0.3)',
+            padding: '14px 20px',
+            background:
+              actionFeedback.type === 'error'
+                ? 'rgba(244, 63, 94, 0.15)'
+                : actionFeedback.type === 'success'
+                ? 'rgba(16, 185, 129, 0.15)'
+                : 'rgba(6, 182, 212, 0.15)',
+            border: `1px solid ${
+              actionFeedback.type === 'error'
+                ? 'rgba(244, 63, 94, 0.4)'
+                : actionFeedback.type === 'success'
+                ? 'rgba(16, 185, 129, 0.4)'
+                : 'rgba(6, 182, 212, 0.4)'
+            }`,
             borderRadius: 'var(--radius-md)',
-            color: '#22d3ee',
+            color:
+              actionFeedback.type === 'error'
+                ? '#fb7185'
+                : actionFeedback.type === 'success'
+                ? '#34d399'
+                : '#22d3ee',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
+            gap: '6px',
           }}
         >
-          <span>{actionFeedback}</span>
-          <button
-            onClick={() => setActionFeedback(null)}
-            style={{ background: 'none', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 'bold' }}
-          >
-            ✕
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontWeight: 600 }}>{actionFeedback.text}</span>
+            <button
+              onClick={() => setActionFeedback(null)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '1rem',
+              }}
+            >
+              ✕
+            </button>
+          </div>
+          {actionFeedback.details && (
+            <div style={{ fontSize: '0.85rem', opacity: 0.9, whiteSpace: 'pre-wrap' }}>
+              {actionFeedback.details}
+            </div>
+          )}
         </div>
       )}
 
